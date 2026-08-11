@@ -69,17 +69,17 @@ More target VMs can be added to this same NAT Network in the future for practice
 
 | 🧩 Component       | ⚙️ Configuration        |
 | ------------------ | ------------------------ |
-| 🖥️ Host OS         | Windows                 |
-| 🧰 Hypervisor      | VirtualBox 7.2           |
-| 🐉 Security OS     | Kali Linux 2026.2        |
-| 🧠 Kali RAM        | 2048 MB                  |
-| 🌐 Virtual Network | NAT Network              |
-| 📡 Network Address | 10.0.0.0/24              |
-| 🚪 Default Gateway | 10.0.0.1                 |
-| 🖧 DHCP Server IP  | 10.0.0.2 (reserved by VirtualBox — cannot be assigned to a VM) |
-| 🐧 Kali IP Address | 10.0.0.50 (static)       |
-| 🌍 DNS Server      | 8.8.8.8, 1.1.1.1          |
-| 🔮 DHCP Pool Range | 10.0.0.3 – 10.0.0.254    |
+| Host OS         | Windows                 |
+| Hypervisor      | VirtualBox 7.2           |
+| Security OS     | Kali Linux 2026.2        |
+| Kali RAM        | 2048 MB                  |
+| Virtual Network | NAT Network              |
+| Network Address | 10.0.0.0/24              |
+| Default Gateway | 10.0.0.1                 |
+| DHCP Server IP  | 10.0.0.2 (reserved by VirtualBox — cannot be assigned to a VM) |
+| Kali IP Address | 10.0.0.50 (static)       |
+|  DNS Server      | 8.8.8.8, 1.1.1.1          |
+|  DHCP Pool Range | 10.0.0.3 – 10.0.0.254    |
 
 ---
 
@@ -91,7 +91,7 @@ Downloaded and installed VirtualBox on my Windows host machine as the hypervisor
 
 **Tool:** VirtualBox 7.2
 
-![alt text](virtual box download.png)
+![alt text](virtual-box-download.png)
 
 ---
 
@@ -138,6 +138,7 @@ RAM: 2048 MB
 ```
 
 ![alt text](add-kali-machine.png)
+[alt text](configure-kali-ip.png)
 
 ---
 
@@ -231,9 +232,8 @@ ping -c 3 10.0.0.1     # gateway
 ping -c 3 google.com       # internet
 nslookup networkwalks.com   # DNS resolution
 ```
-![alt text](ping google.com.png)
-![alt text](default gateway.png)
-![alt text](dns.png)
+![alt text](ping-google.com.png)
+![alt text](default-gateway.png)
 All three came back clean — gateway reachable, internet reachable, DNS resolving correctly.
 
 
@@ -257,14 +257,14 @@ If anything breaks later, I can roll back to this exact working state instead of
 
 #  Lab Verification
 
-| ✅ Test                        | 🧾 Command                    | 🎯 Expected Result              |
+|  Test                        | 🧾 Command                    | 🎯 Expected Result              |
 | ----------------------------- | ------------------------------ | -------------------------------- |
-| 🌐 Check IP address           | `ip a`                        | `10.0.0.50/24` shown on eth0     |
-| 📡 Test gateway               | `ping 10.0.0.1`               | Successful replies               |
-| 🌍 Test Internet connectivity | `ping 8.8.8.8`                | Successful replies               |
-| 🔎 Test DNS resolution        | `nslookup networkwalks.com`   | Domain resolves                  |
-| 🖧 Confirm DHCP server info   | `VBoxManage list dhcpservers` | Shows DHCP IP and pool range     |
-| 🔄 Verify snapshot            | Restore snapshot, run `ip a`  | Baseline configuration restored  |
+|  Check IP address           | `ip a`                        | `10.0.0.50/24` shown on eth0     |
+|  Test gateway               | `ping 10.0.0.1`               | Successful replies               |
+|  Test Internet connectivity | `ping 8.8.8.8`                | Successful replies               |
+|  Test DNS resolution        | `nslookup networkwalks.com`   | Domain resolves                  |
+|  Confirm DHCP server info   | `VBoxManage list dhcpservers` | Shows DHCP IP and pool range     |
+| Verify snapshot            | Restore snapshot, run `ip a`  | Baseline configuration restored  |
 
 ### Example Results
 
@@ -377,6 +377,6 @@ Rosan Shrestha
 Cyber security intern at Networkwalk
 **LinkedIn**:www.linkedin.com/in/rosanshrestha
 
-## 📌 Project Information
+##  Project Information
 
 **Project:** Cybersecurity & Pentesting Lab Setup
