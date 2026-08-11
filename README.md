@@ -1,280 +1,382 @@
+<div align="center">
+
 #  Cybersecurity Lab Environment Setup
 
-## Building an isolated virtual lab for penetration testing and ethical hacking practice
-
+**Building an isolated virtual lab for penetration testing and ethical hacking practice**
 </div>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Skill-Cybersecurity-404040?style=flat-square&labelColor=C00000" />
-  <img src="https://img.shields.io/badge/VirtualBox-v7.2.14-0070C0?style=flat-square&labelColor=000000" />
+  <img src="https://img.shields.io/badge/Ver-Virtualbox%20v7.2-0070C0?style=flat-square&labelColor=000000" />
   <img src="https://img.shields.io/badge/Kali%20Linux-v2026.2-E87500?style=flat-square&labelColor=000000&logo=kalilinux&logoColor=white" />
+  <img src="https://img.shields.io/badge/Skill-Linux-404040?style=flat-square&labelColor=C00000" />
   <img src="https://img.shields.io/badge/Network-10.0.0.0%2F24-238F89?style=flat-square&labelColor=000000" />
   <img src="https://img.shields.io/badge/Penetration%20Testing-C00000?style=flat-square&labelColor=000000&logo=kalilinux&logoColor=white" />
-  <img src="https://img.shields.io/badge/Virtualization-404040?style=flat-square&labelColor=C00000" />
-  <img src="https://img.shields.io/badge/NetworkWalks-404040?style=flat-square&labelColor=C00000" />
+  <img src="https://img.shields.io/badge/Skill-Virtualization-404040?style=flat-square&labelColor=C00000" />
 </p>
 
-## Project overview
-This project is about setup a small and controlled **Cybersecurity and Penetration lab environment** using  **virtual Box and Kali Linux**
-The main purpose of the lab is to create a safe place where I can learn and practice cybersecurity activities such as network scanning, reconnaissance, vulnerability assessment, packet analysis, and penetration-testing techniques.
+---
 
-The lab uses a private VirtualBox NAT Network so that additional virtual machines can be added later and used as authorized target machines.
+##  Project Overview
 
-*Ethical Use: This lab is intended for education and authorized security testing only. I will only test systems that I own or have explicit permission to test.*
+This project is about setting up my own **virtual cybersecurity lab** using VirtualBox and Kali Linux.
 
-## Objectives 
-The main objectives of this week1 project are:
-- Install and configure VirtualBox v7.2.14.
-- Download and configure Kali Linux 2026.2.
-- Create a dedicated VirtualBox NAT Network.
-- Configure kali Linux networking.
-- Understand NAT Network, gateway, DHCP, and static IP addressing.
-- Verify connectivity between the kali VM and virtual gateway.
-- Test interne connectivity and DNS resolution.
-- Create a clean VM snapshot for recovery.
-- Document problems and their solutions.
-- Prepare the environment for future cybersecurity labs.
+The goal was to build a safe, isolated environment on my own computer where I can practice things like network scanning, reconnaissance, and other security testing — without touching any real network or any system I don't own.
 
-
-## Purpose of the Lab
-
-A cybersecurity lab gives me a controlled environment where I can safely experiment without directly affecting production systems.
-
-The lab can later be used for:
-
-- Network reconnaissance
-
-- Port scanning
-
-- Vulnerability assessment
-
-- Packet analysis
-
-- Web security testing
-
-- Exploitation practice
-
-- Security-tool experimentation
-
-- Security monitoring and analysis
-
-Future target VMs can be connected to the same NAT Network for authorized testing.
-
-## Lab Architecture
-![](image.png)
-
-
-## Lab Configuration
-
-| 🧩 Component       | ⚙️ Configuration   |
-| ------------------ | ------------------  |
-| 🖥️ Host OS         | Windows 11         |
-| 🧠 Host RAM        | 32 GB               |
-| ⚡ Processor       | Intel Core i7      |
-| 🧰 Hypervisor      | VirtualBox 7.2.14  |
-| 🐉 Security OS     | Kali Linux 2026.2  |
-| 🧠 Kali RAM        | 2048 MB            |
-| 🌐 Virtual Network | NAT Network        |
-| 📡 Network Address | 10.0.0.0/24        |
-| 🐧 Kali IP Address | 10.0.0.2/24        |
-| 🚪 Default Gateway | 10.0.0.1           |
-| 🌍 DNS Server      | 8.8.8.8            |
-| 🔮 Future VM Range | 10.0.0.3–10.0.0.99 |
+The lab runs on its own private virtual network, so I can add more virtual machines later and use them as "target" machines for practice.
 
 ---
-## Lab Setup Procedure
 
-Step 1. Install 7-Zip
+##  Objectives week1 :
 
-7-Zip was installed so that the Kali Linux virtual-machine archive could be extracted when required.
+- Install VirtualBox on my Windows host machine.
+- Install Kali Linux as a virtual machine.
+- Create a private **NAT Network** for the lab (not just plain NAT).
+- Connect the Kali VM to that network.
+- Give the Kali VM a consistent, working IP address.
+- Confirm the VM can reach the gateway and the internet, and that DNS works.
+- Understand and fix a real IP conflict I ran into during setup.
+- Take a clean snapshot once everything works, so I always have a safe point to go back to.
+- Write all of this down so I (or anyone else) can repeat it later.
 
-Tool: 7-Zip
+---
 
-Step 2. Install VirtualBox
+##  Purpose of the Lab
 
-Oracle VirtualBox was installed as the virtualization platform.
+This lab gives me a safe, offline-from-production environment to practice things like:
 
-The installed version used in this project is:
+- Network reconnaissance
+- Port scanning
+- Vulnerability assessment
+- Packet analysis
+- Web security testing
+- Exploitation practice
+- Trying out new security tools without risk
 
-VirtualBox 7.2.14
+ **Important:** This lab is only for machines I own or have explicit permission to test. I will never point any of these tools at systems that aren't mine.
 
-Screenshot:
+---
 
-Step 3. Create the NAT Network
+##  Lab Architecture
 
-A dedicated NAT Network was created in VirtualBox.
+![alt text](image.png)
+More target VMs can be added to this same NAT Network in the future for practice.
 
-The network configuration was:
+---
 
-Network Name: NATNetwork
+
+##  Lab Configuration
+
+| 🧩 Component       | ⚙️ Configuration        |
+| ------------------ | ------------------------ |
+| 🖥️ Host OS         | Windows                 |
+| 🧰 Hypervisor      | VirtualBox 7.2           |
+| 🐉 Security OS     | Kali Linux 2026.2        |
+| 🧠 Kali RAM        | 2048 MB                  |
+| 🌐 Virtual Network | NAT Network              |
+| 📡 Network Address | 10.0.0.0/24              |
+| 🚪 Default Gateway | 10.0.0.1                 |
+| 🖧 DHCP Server IP  | 10.0.0.2 (reserved by VirtualBox — cannot be assigned to a VM) |
+| 🐧 Kali IP Address | 10.0.0.50 (static)       |
+| 🌍 DNS Server      | 8.8.8.8, 1.1.1.1          |
+| 🔮 DHCP Pool Range | 10.0.0.3 – 10.0.0.254    |
+
+---
+
+#  Lab Setup Procedure
+
+## Step 1. Install VirtualBox
+
+Downloaded and installed VirtualBox on my Windows host machine as the hypervisor that runs all the virtual machines.
+
+**Tool:** VirtualBox 7.2
+
+![alt text](virtual box download.png)
+
+---
+
+## Step 2. Create the NAT Network
+
+Instead of using VirtualBox's basic "NAT" mode, I created a dedicated **NAT Network**. This matters because a plain NAT adapter is isolated per VM — the VM can reach the internet, but it can't talk to other VMs. A NAT Network is shared, so multiple VMs attached to it can talk to each other *and* reach the internet, which is exactly what a lab needs once more target machines get added.
+
+Steps I followed:
+
+1. Opened VirtualBox → **File → Tools → Network Manager**.
+2. Went to the **NAT Networks** tab and clicked **Create**.
+3. Renamed it to `NatNetwork` and set:
+
+```text
+Network Name: NatNetwork
 IPv4 Prefix:  10.0.0.0/24
-Gateway:      10.0.0.1
 DHCP:         Enabled
 IPv6:         Disabled
+```
 
-The NAT Network allows virtual machines connected to the same network to communicate with each other while also providing NAT-based external connectivity.
+4. Clicked **Apply**.
 
-Screenshot:
+![alt text](create NAT netwrok.png)
 
-Step 5. Import Kali Linux
+---
 
-Kali Linux 2026.2 was imported into VirtualBox.
+## Step 3. Import Kali Linux
 
-The VM was configured with:
+Downloaded the official Kali Linux VirtualBox image from the Kali website and imported it into VirtualBox.
 
-Operating System: Kali Linux 2026.2
-Network Adapter:  Adapter 1
-Attached to:      NAT Network
-Network:          NATNetwork
-Adapter Type:     Intel PRO/1000 MT Desktop
+Then I set the network adapter on the VM like this:
 
-The VM was started successfully after the VirtualBox virtualization configuration was corrected.
+```text
+Adapter 1
+Attached to:  NAT Network
+Network:      NatNetwork
+Adapter Type: Intel PRO/1000 MT Desktop
+```
 
-Screenshot:
+Allocated resources:
 
-Step 6. Configure the Kali Network
+```text
+RAM: 2048 MB
+```
 
-The Kali network interface was checked using:
+![alt text](add-kali-machine.png)
 
-ip addr show eth0
+---
 
-and:
+## Step 4. First Boot and DHCP Check
 
-ip -4 addr show
+Booted the Kali VM and checked the network with:
 
-The network route was checked using:
+```bash
+ip a
+```
 
-ip route
+The interface came up but wasn't getting an IP address through DHCP — it kept sitting in a "connecting (getting IP configuration)" state and never finished. This turned into the main troubleshooting exercise of the whole project (see the Problems section below).
 
-The expected network design is:
+---
 
-Network:     10.0.0.0/24
-Gateway:     10.0.0.1
-Kali IP:     10.0.0.X/24
-DNS:         8.8.8.8
+## Step 5. Diagnose the DHCP Issue
 
-## Lab Verification
+To see what was actually going wrong, I watched the NetworkManager logs live while trying to connect:
 
-The following tests will be performed after the final IP configuration is completed.
+```bash
+sudo journalctl -u NetworkManager -f
+```
 
-| ✅ Test                | 🧾 Command                  | 🎯 Expected Result                 |
-| --------------------- | --------------------------- | ---------------------------------- |
-| 🌐 Check IPv4 address | `ip -4 addr show eth0`      | Kali has the expected IPv4 address |
-| 🛣️ Check routing      | `ip route`                  | Default route uses `10.0.0.1`      |
-| 📡 Test gateway        | `ping -c 4 10.0.0.1`        | Successful replies                 |
-| 🌍 Test Internet       | `ping -c 4 8.8.8.8`         | Successful replies                 |
-| 🔎 Test DNS            | `nslookup networkwalks.com` | Domain resolves                    |
-| 🧰 Verify Nmap         | `nmap --version`            | Nmap version displayed             |
-| 📦 Check interface     | `ip link show eth0`         | Interface is UP                    |
-| 🔗 Check neighbors     | `ip neigh`                  | Gateway appears in neighbor table  |
+In another terminal:
 
-Example Verification Commands
+```bash
+sudo nmcli device connect eth0
+```
 
-ip -4 addr show eth0
+The log showed this warning repeating:
 
-ip route
+```text
+IP address 10.0.0.2 cannot be configured because it is already in use in the network by host 08:00:27:06:AF:17
+```
 
-ping -c 4 10.0.0.1
+So Kali was specifically trying to grab `10.0.0.2` and failing every time.
 
-ping -c 4 8.8.8.8
+---
 
-nslookup networkwalks.com
+## Step 6. Find the Real Cause
 
-nmap --version
+On the Windows host, I checked what VirtualBox actually had configured for this network's DHCP server:
 
-💾 Snapshot and Backup Strategy
+```cmd
+"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" list dhcpservers
+```
 
-After completing the basic lab configuration, a clean VirtualBox snapshot should be created.
+Output showed:
+![alt text](ip-conflicts.png)
 
-Recommended snapshot name:
+```text
+NetworkName:    NatNetwork
+Dhcpd IP:       10.0.0.2
+LowerIPAddress: 10.0.0.3
+UpperIPAddress: 10.0.0.254
+```
 
+That explained everything: `10.0.0.2` is the address of **VirtualBox's own internal DHCP server**, not a free address at all. The actual pool of addresses available for VMs starts at `10.0.0.3`. My Kali VM had an old/cached lease trying to reuse `10.0.0.2`, which will never work since that address belongs to the DHCP service itself.
+
+---
+
+## Step 7. Fix It With a Static IP
+
+Rather than fight the stale DHCP lease, I gave Kali a manual static IP inside the valid pool range, well clear of the DHCP server's own address:
+
+```bash
+sudo nmcli connection modify "Wired connection 1" ipv4.addresses 10.0.0.3/24
+sudo nmcli connection modify "Wired connection 1" ipv4.gateway 10.0.0.1
+sudo nmcli connection modify "Wired connection 1" ipv4.dns "8.8.8.8 1.1.1.1"
+sudo nmcli connection modify "Wired connection 1" ipv4.method manual
+
+sudo nmcli connection down "Wired connection 1"
+sudo nmcli connection up "Wired connection 1"
+```
+
+Checked it took effect:
+
+```bash
+ip a
+```
+![alt text](ifconfig.png)
+
+---
+
+## Step 8. Verify Everything Works
+
+Ran through a basic set of checks to confirm the VM was fully online.
+
+```bash
+ping -c 3 10.0.0.1     # gateway
+ping -c 3 google.com       # internet
+nslookup networkwalks.com   # DNS resolution
+```
+![alt text](ping google.com.png)
+![alt text](default gateway.png)
+![alt text](dns.png)
+All three came back clean — gateway reachable, internet reachable, DNS resolving correctly.
+
+
+
+---
+
+## Step 9. Take a Clean Snapshot
+
+Once the network was confirmed working, I took a VirtualBox snapshot as a safe restore point before doing anything else with the VM (installing tools, running scans, etc.).
+
+Example snapshot name:
+
+```text
 Clean Kali - Network Setup
+```
 
-The snapshot provides a known-good recovery point.
+If anything breaks later, I can roll back to this exact working state instead of redoing the whole setup.
+![alt text](snapshots.png)
 
-Before performing major experiments such as:
+---
 
-Exploitation
+#  Lab Verification
 
-Malware analysis
+| ✅ Test                        | 🧾 Command                    | 🎯 Expected Result              |
+| ----------------------------- | ------------------------------ | -------------------------------- |
+| 🌐 Check IP address           | `ip a`                        | `10.0.0.50/24` shown on eth0     |
+| 📡 Test gateway               | `ping 10.0.0.1`               | Successful replies               |
+| 🌍 Test Internet connectivity | `ping 8.8.8.8`                | Successful replies               |
+| 🔎 Test DNS resolution        | `nslookup networkwalks.com`   | Domain resolves                  |
+| 🖧 Confirm DHCP server info   | `VBoxManage list dhcpservers` | Shows DHCP IP and pool range     |
+| 🔄 Verify snapshot            | Restore snapshot, run `ip a`  | Baseline configuration restored  |
 
-Network configuration changes
+### Example Results
 
-Security-tool testing
+```text
+IP Address:
+10.0.0.3/24
 
-Vulnerability testing
+Gateway:
+10.0.0.1
 
-a new snapshot should be created.
+DNS:
+8.8.8.8, 1.1.1.1
+```
 
-Important VM files should also be backed up separately when necessary.
+---
 
-💡 What I Learned
+#  Problems Encountered & Solutions
 
-Through this project, I learned how to build a basic virtual cybersecurity laboratory from the ground up.
+## Problem 1. Kali Wouldn't Get an IP Address via DHCP
 
-1. VirtualBox Networking
+**Symptom:** `nmcli device status` showed `eth0` permanently stuck in `connecting (getting IP configuration)` and never finished.
 
-I learned how VirtualBox connects a virtual machine to a NAT Network and how the virtual network provides a gateway and DHCP service.
+**Cause:** Kali kept requesting `10.0.0.2`, which turned out to be the address reserved for VirtualBox's own internal DHCP server on that NAT Network — not an address available for VMs.
 
-2. NAT Network vs NAT
+**Fix:** Assigned a static IP (`10.0.0.3`) inside the actual valid DHCP pool (`10.0.0.3`–`10.0.0.254`), bypassing the stuck lease entirely.
 
-I learned that a NAT Network is useful when multiple VMs need to communicate with each other while still having external network connectivity.
+```bash
+sudo nmcli connection modify "Wired connection 1" ipv4.method manual
+sudo nmcli connection modify "Wired connection 1" ipv4.addresses 10.0.0.3/24
+sudo nmcli connection modify "Wired connection 1" ipv4.gateway 10.0.0.1
+sudo nmcli connection modify "Wired connection 1" ipv4.dns "8.8.8.8 1.1.1.1"
+sudo nmcli connection up "Wired connection 1"
+```
 
-3. Static IP Configuration
+**How I confirmed the root cause:** ran `VBoxManage list dhcpservers` on the Windows host, which clearly showed the DHCP server's own IP (`10.0.0.2`) and the actual assignable range (`10.0.0.3`–`10.0.0.254`).
 
-I learned how to configure and verify:
+> **Note:** Interface and connection names (like `"Wired connection 1"`) can differ between systems — always check with `nmcli connection show` first before running these commands.
 
-IPv4 address
+---
 
-Subnet mask
+## Problem 2. `VBoxManage` Not Recognized in Command Prompt
 
-Gateway
+**Symptom:** Running `VBoxManage` from Windows `cmd` gave `'VBoxManage' is not recognized as an internal or external command`.
 
-DNS
+**Cause:** VirtualBox's install folder wasn't in the Windows PATH environment variable.
 
-Routing
+**Fix:** Either called it with the full path each time:
 
-6. VM Snapshots
+```cmd
+"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" list dhcpservers
+```
 
-I learned that snapshots are useful for maintaining a clean recovery point before performing risky cybersecurity experiments.
+or added `C:\Program Files\Oracle\VirtualBox` to the system PATH permanently via **System Properties → Environment Variables**, then reopened Command Prompt.
 
-7. Documentation
+---
 
-I learned that documenting the configuration, commands, screenshots, errors, and solutions is an important part of a professional cybersecurity project.
+## Problem 3. `dhclient` Command Not Found
 
-🔐 Security & Ethical Use
+**Symptom:** `sudo dhclient -v eth0` returned `sudo: dhclient: command not found`.
 
-This laboratory is intended strictly for:
+**Cause:** Modern Kali Linux no longer ships `isc-dhcp-client` by default — networking is fully handled by NetworkManager instead.
 
-Education
+**Fix:** Used `nmcli` commands (`nmcli device connect eth0`, `nmcli connection up ...`) instead of `dhclient` for all DHCP operations.
 
-Cybersecurity training
+---
 
-Authorized penetration testing
+#  What I Learned
 
-Security research in controlled environments
+### 1. NAT vs NAT Network
 
-I will only test systems that I own or have explicit permission to test.
+A plain NAT adapter isolates a VM to itself — it can reach the internet but not other VMs. A NAT Network is shared infrastructure that multiple VMs can join, so they can talk to each other while still reaching the internet. That's the right choice for any lab that will eventually have more than one VM.
 
-🔗 Tools & Resources
+### 2. The DHCP Server Has Its Own Reserved Address
 
-7-Zip: https://7-zip.org/download.html
+I learned the hard way that VirtualBox's internal DHCP server itself occupies an address on the network (in my case `10.0.0.2`) — that address is never available to hand out to a VM. Running `VBoxManage list dhcpservers` on the host is the fastest way to see the real DHCP IP and the actual assignable pool range.
 
-VirtualBox: https://virtualbox.org/wiki/Downloads
+### 3. Static IP vs DHCP
 
-Kali Linux: https://kali.org/get-kali
+DHCP is convenient and needs zero setup inside the guest, but the address can shift or run into stale-lease issues. A static IP takes a couple of extra commands but guarantees the same address every time — which matters a lot in a lab where I want to reliably reference "the Kali box" by IP in scripts and tools.
 
-NetworkWalks: https://networkwalks.com/
+### 4. Reading Logs Instead of Guessing
 
+`journalctl -u NetworkManager -f` was the single most useful troubleshooting step in this whole project — it showed the exact reason the connection was failing instead of me guessing at fixes.
 
-# Author
+### 5. Snapshots Are Cheap Insurance
 
+Taking a clean snapshot right after getting the network working means I never have to redo this whole process again if a future exercise breaks something.
+
+### 6. Documentation Matters
+
+Writing down every command, every error message, and every fix — not just the final working state — makes this whole setup repeatable and much easier to debug next time something looks similar.
+
+---
+
+#  Security & Ethical Use
+
+This lab is intended strictly for educational purposes and testing against systems I own or am explicitly authorized to test.
+
+---
+
+# 🔗 Tools & Resources
+
+- **7-Zip:** https://7-zip.org/download.html
+- **VirtualBox:** [https://virtualbox.org/wiki/Downloads](https://virtualbox.org/wiki/Downloads)
+- **Kali Linux:** [https://kali.org/get-kali](https://kali.org/get-kali)
+
+---
+## Author
 Rosan Shrestha
+Cyber security intern at Networkwalk
+**LinkedIn**:www.linkedin.com/in/rosanshrestha
 
-Cybersecurity Learner | IT Engineering Graduate
+## 📌 Project Information
 
-Program: Cybersecurity / Ethical Hacking TrainingOrganization: NetworkWalksProject: Cybersecurity Lab Environment SetupWeek: 01
-
-LinkedIn:
-
-[Add your LinkedIn profile link here]
+**Project:** Cybersecurity & Pentesting Lab Setup
