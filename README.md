@@ -27,15 +27,15 @@ The lab runs on its own private virtual network, so I can add more virtual machi
 
 ---
 
-##  Objectives week1 :
+##  Objectives week1:
 
 - Install VirtualBox on my Windows host machine.
 - Install Kali Linux as a virtual machine.
 - Create a private **NAT Network** for the lab (not just plain NAT).
 - Connect the Kali VM to that network.
-- Give the Kali VM a consistent, working IP address.
+- Get the Kali VM online with a working IP address.
 - Confirm the VM can reach the gateway and the internet, and that DNS works.
-- Understand and fix a real IP conflict I ran into during setup.
+- Understand and fix a networking delay issue that's common on recent Kali Linux releases.
 - Take a clean snapshot once everything works, so I always have a safe point to go back to.
 - Write all of this down so I (or anyone else) can repeat it later.
 
@@ -64,7 +64,6 @@ More target VMs can be added to this same NAT Network in the future for practice
 
 ---
 
-
 ##  Lab Configuration
 
 | 🧩 Component       | ⚙️ Configuration        |
@@ -75,12 +74,9 @@ More target VMs can be added to this same NAT Network in the future for practice
 | Kali RAM        | 2048 MB                  |
 | Virtual Network | NAT Network              |
 | Network Address | 10.0.0.0/24              |
-| Default Gateway | 10.0.0.1                 |
-| DHCP Server IP  | 10.0.0.2 (reserved by VirtualBox — cannot be assigned to a VM) |
-| Kali IP Address | 10.0.0.50 (static)       |
+| Default Gateway | 10.0.0.1                 | |
+| Kali IP Address | 10.0.0.2 |
 |  DNS Server      | 8.8.8.8, 1.1.1.1          |
-|  DHCP Pool Range | 10.0.0.3 – 10.0.0.254    |
-
 ---
 
 #  Lab Setup Procedure
@@ -138,7 +134,7 @@ RAM: 2048 MB
 ```
 
 ![alt text](add-kali-machine.png)
-[alt text](configure-kali-ip.png)
+![alt text](configure-kali-ip.png)
 
 ---
 
@@ -150,13 +146,13 @@ Booted the Kali VM and checked the network with:
 ip a
 ```
 
-The interface came up but wasn't getting an IP address through DHCP — it kept sitting in a "connecting (getting IP configuration)" state and never finished. This turned into the main troubleshooting exercise of the whole project (see the Problems section below).
+The interface came up, but `nmcli device status` kept showing `eth0` stuck in a **"connecting (getting IP configuration)"** state and it wouldn't finish getting an address. No matter how long I waited, it just sat there.
 
 ---
 
-## Step 5. Diagnose the DHCP Issue
+## Step 5. Diagnose the Issue
 
-To see what was actually going wrong, I watched the NetworkManager logs live while trying to connect:
+To see what was actually happening, I watched the NetworkManager logs live while trying to bring the interface up:
 
 ```bash
 sudo journalctl -u NetworkManager -f
@@ -168,79 +164,49 @@ In another terminal:
 sudo nmcli device connect eth0
 ```
 
-The log showed this warning repeating:
-
-```text
-IP address 10.0.0.2 cannot be configured because it is already in use in the network by host 08:00:27:06:AF:17
-```
-
-So Kali was specifically trying to grab `10.0.0.2` and failing every time.
+The interface would hang for a long time before eventually completing (or timing out) its DHCP request. After a bit of searching, I found this isn't specific to my setup at all — it's a **known networking issue on recent Kali Linux releases (2026.1 and newer)**. NetworkManager waits on IPv4 Duplicate Address Detection (DAD) before finishing the address configuration, and on virtualized/NAT networks that check can stall or time out, which makes it look like the VM has no internet connectivity even though the network itself is fine.
 
 ---
 
-## Step 6. Find the Real Cause
+## Step 6. Fix It
 
-On the Windows host, I checked what VirtualBox actually had configured for this network's DHCP server:
-
-```cmd
-"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" list dhcpservers
-```
-
-Output showed:
-![alt text](ip-conflicts.png)
-
-```text
-NetworkName:    NatNetwork
-Dhcpd IP:       10.0.0.2
-LowerIPAddress: 10.0.0.3
-UpperIPAddress: 10.0.0.254
-```
-
-That explained everything: `10.0.0.2` is the address of **VirtualBox's own internal DHCP server**, not a free address at all. The actual pool of addresses available for VMs starts at `10.0.0.3`. My Kali VM had an old/cached lease trying to reuse `10.0.0.2`, which will never work since that address belongs to the DHCP service itself.
-
----
-
-## Step 7. Fix It With a Static IP
-
-Rather than fight the stale DHCP lease, I gave Kali a manual static IP inside the valid pool range, well clear of the DHCP server's own address:
+The fix is a single `nmcli` command that disables the DAD timeout for the connection, so NetworkManager stops waiting on it and finishes bringing the interface up normally:
 
 ```bash
-sudo nmcli connection modify "Wired connection 1" ipv4.addresses 10.0.0.3/24
-sudo nmcli connection modify "Wired connection 1" ipv4.gateway 10.0.0.1
-sudo nmcli connection modify "Wired connection 1" ipv4.dns "8.8.8.8 1.1.1.1"
-sudo nmcli connection modify "Wired connection 1" ipv4.method manual
+sudo nmcli connection modify "Wired connection 1" ipv4.dad-timeout 0
+```
 
+Then brought the connection back up to apply it:
+
+```bash
 sudo nmcli connection down "Wired connection 1"
 sudo nmcli connection up "Wired connection 1"
 ```
 
-Checked it took effect:
+> **Note:** Connection names (like `"Wired connection 1"`) can differ between systems — always check with `nmcli connection show` first before running this.
 
-```bash
-ip a
-```
 ![alt text](ifconfig.png)
 
 ---
 
-## Step 8. Verify Everything Works
+## Step 7. Verify Everything Works
 
 Ran through a basic set of checks to confirm the VM was fully online.
 
 ```bash
-ping -c 3 10.0.0.1     # gateway
-ping -c 3 google.com       # internet
+ip a
+ping -c 3 10.0.0.1          # gateway
+ping -c 3 google.com        # internet
 nslookup networkwalks.com   # DNS resolution
 ```
 ![alt text](ping-google.com.png)
 ![alt text](default-gateway.png)
-All three came back clean — gateway reachable, internet reachable, DNS resolving correctly.
 
-
+All checks came back clean — the VM picked up a proper DHCP address, the gateway was reachable, internet worked, and DNS resolved correctly.
 
 ---
 
-## Step 9. Take a Clean Snapshot
+## Step 8. Take a Clean Snapshot
 
 Once the network was confirmed working, I took a VirtualBox snapshot as a safe restore point before doing anything else with the VM (installing tools, running scans, etc.).
 
@@ -259,11 +225,11 @@ If anything breaks later, I can roll back to this exact working state instead of
 
 |  Test                        | 🧾 Command                    | 🎯 Expected Result              |
 | ----------------------------- | ------------------------------ | -------------------------------- |
-|  Check IP address           | `ip a`                        | `10.0.0.50/24` shown on eth0     |
+|  Check IP address           | `ip a`                        | Address in the `10.0.0.0/24` range shown on eth0 |
 |  Test gateway               | `ping 10.0.0.1`               | Successful replies               |
 |  Test Internet connectivity | `ping 8.8.8.8`                | Successful replies               |
 |  Test DNS resolution        | `nslookup networkwalks.com`   | Domain resolves                  |
-|  Confirm DHCP server info   | `VBoxManage list dhcpservers` | Shows DHCP IP and pool range     |
+|  Confirm NetworkManager status | `nmcli device status`      | `eth0` shows `connected`, not stuck |
 | Verify snapshot            | Restore snapshot, run `ip a`  | Baseline configuration restored  |
 
 ### Example Results
@@ -283,23 +249,21 @@ DNS:
 
 #  Problems Encountered & Solutions
 
-## Problem 1. Kali Wouldn't Get an IP Address via DHCP
+## Problem 1. Kali Stuck on "Getting IP Configuration"
 
-**Symptom:** `nmcli device status` showed `eth0` permanently stuck in `connecting (getting IP configuration)` and never finished.
+**Symptom:** `nmcli device status` showed `eth0` permanently stuck in `connecting (getting IP configuration)`, and the VM had no internet access.
 
-**Cause:** Kali kept requesting `10.0.0.2`, which turned out to be the address reserved for VirtualBox's own internal DHCP server on that NAT Network — not an address available for VMs.
+**Cause:** This is a known issue on recent Kali Linux versions (2026.1+). NetworkManager waits for IPv4 Duplicate Address Detection to finish before completing the DHCP configuration, and on a virtualized NAT network that check can hang or take an unreasonably long time — even though there's no actual address conflict.
 
-**Fix:** Assigned a static IP (`10.0.0.3`) inside the actual valid DHCP pool (`10.0.0.3`–`10.0.0.254`), bypassing the stuck lease entirely.
+**Fix:** Disabled the DAD timeout for the connection:
 
 ```bash
-sudo nmcli connection modify "Wired connection 1" ipv4.method manual
-sudo nmcli connection modify "Wired connection 1" ipv4.addresses 10.0.0.3/24
-sudo nmcli connection modify "Wired connection 1" ipv4.gateway 10.0.0.1
-sudo nmcli connection modify "Wired connection 1" ipv4.dns "8.8.8.8 1.1.1.1"
+sudo nmcli connection modify "Wired connection 1" ipv4.dad-timeout 0
+sudo nmcli connection down "Wired connection 1"
 sudo nmcli connection up "Wired connection 1"
 ```
 
-**How I confirmed the root cause:** ran `VBoxManage list dhcpservers` on the Windows host, which clearly showed the DHCP server's own IP (`10.0.0.2`) and the actual assignable range (`10.0.0.3`–`10.0.0.254`).
+After running this, the interface picked up a DHCP address normally within a few seconds.
 
 > **Note:** Interface and connection names (like `"Wired connection 1"`) can differ between systems — always check with `nmcli connection show` first before running these commands.
 
@@ -337,23 +301,19 @@ or added `C:\Program Files\Oracle\VirtualBox` to the system PATH permanently via
 
 A plain NAT adapter isolates a VM to itself — it can reach the internet but not other VMs. A NAT Network is shared infrastructure that multiple VMs can join, so they can talk to each other while still reaching the internet. That's the right choice for any lab that will eventually have more than one VM.
 
-### 2. The DHCP Server Has Its Own Reserved Address
+### 2. Not Every Networking Problem Is a Config Mistake
 
-I learned the hard way that VirtualBox's internal DHCP server itself occupies an address on the network (in my case `10.0.0.2`) — that address is never available to hand out to a VM. Running `VBoxManage list dhcpservers` on the host is the fastest way to see the real DHCP IP and the actual assignable pool range.
+I initially assumed the stuck DHCP request meant I'd misconfigured something. It turned out to be a known NetworkManager/DAD-related delay that's been reported across recent Kali releases, fixed with a single `dad-timeout` setting. It was a good reminder to check whether an issue is already documented before spending hours re-configuring things from scratch.
 
-### 3. Static IP vs DHCP
+### 3. Reading Logs Instead of Guessing
 
-DHCP is convenient and needs zero setup inside the guest, but the address can shift or run into stale-lease issues. A static IP takes a couple of extra commands but guarantees the same address every time — which matters a lot in a lab where I want to reliably reference "the Kali box" by IP in scripts and tools.
+`journalctl -u NetworkManager -f` was the most useful troubleshooting step in this whole project — watching the interface actually stall in real time made it obvious this was a timing/DAD issue rather than a misconfigured network.
 
-### 4. Reading Logs Instead of Guessing
-
-`journalctl -u NetworkManager -f` was the single most useful troubleshooting step in this whole project — it showed the exact reason the connection was failing instead of me guessing at fixes.
-
-### 5. Snapshots Are Cheap Insurance
+### 4. Snapshots Are Cheap Insurance
 
 Taking a clean snapshot right after getting the network working means I never have to redo this whole process again if a future exercise breaks something.
 
-### 6. Documentation Matters
+### 5. Documentation Matters
 
 Writing down every command, every error message, and every fix — not just the final working state — makes this whole setup repeatable and much easier to debug next time something looks similar.
 
@@ -375,7 +335,7 @@ This lab is intended strictly for educational purposes and testing against syste
 ## Author
 Rosan Shrestha
 Cyber security intern at Networkwalk
-**LinkedIn**:www.linkedin.com/in/rosanshrestha
+**LinkedIn**: www.linkedin.com/in/rosanshrestha
 
 ##  Project Information
 
