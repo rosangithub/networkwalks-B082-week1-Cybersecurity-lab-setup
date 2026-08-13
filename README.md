@@ -134,7 +134,7 @@ RAM: 2048 MB
 ```
 
 ![alt text](add-kali-machine.png)
-![alt text](configure-the-kali-ip.png)
+![alt text](kali-ip-configuration.png)
 
 ---
 
@@ -241,7 +241,7 @@ If anything breaks later, I can roll back to this exact working state instead of
 
 ```text
 IP Address:
-10.0.0.3/24
+10.0.0.2/24
 
 Gateway:
 10.0.0.1
@@ -338,10 +338,10 @@ This lab is intended strictly for educational purposes and testing against syste
 
 ---
 ## Author
-Rosan Shrestha
-Cyber security intern at Networkwalk
-**LinkedIn**: www.linkedin.com/in/rosanshrestha
-
+### Rosan Shrestha
+ - Cyber security intern at Networkwalk
+ - **LinkedIn**: https://www.linkedin.com/in/rosanshrestha
 ##  Project Information
+
 
 **Project:** Cybersecurity & Pentesting Lab Setup
