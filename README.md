@@ -110,7 +110,7 @@ IPv6:         Disabled
 
 4. Clicked **Apply**.
 
-![alt text](create NAT netwrok.png)
+![alt text](create-NAT-network.png)
 
 ---
 
@@ -134,7 +134,7 @@ RAM: 2048 MB
 ```
 
 ![alt text](add-kali-machine.png)
-![alt text](configure-kali-ip.png)
+![alt text](configure-the-kali-ip.png)
 
 ---
 
@@ -145,6 +145,7 @@ Booted the Kali VM and checked the network with:
 ```bash
 ip a
 ```
+![alt text](ip-not-display.png)
 
 The interface came up, but `nmcli device status` kept showing `eth0` stuck in a **"connecting (getting IP configuration)"** state and it wouldn't finish getting an address. No matter how long I waited, it just sat there.
 
@@ -157,12 +158,9 @@ To see what was actually happening, I watched the NetworkManager logs live while
 ```bash
 sudo journalctl -u NetworkManager -f
 ```
+![alt text](view-log.png)
 
-In another terminal:
 
-```bash
-sudo nmcli device connect eth0
-```
 
 The interface would hang for a long time before eventually completing (or timing out) its DHCP request. After a bit of searching, I found this isn't specific to my setup at all — it's a **known networking issue on recent Kali Linux releases (2026.1 and newer)**. NetworkManager waits on IPv4 Duplicate Address Detection (DAD) before finishing the address configuration, and on virtualized/NAT networks that check can stall or time out, which makes it look like the VM has no internet connectivity even though the network itself is fine.
 
@@ -175,9 +173,16 @@ The fix is a single `nmcli` command that disables the DAD timeout for the connec
 ```bash
 sudo nmcli connection modify "Wired connection 1" ipv4.dad-timeout 0
 ```
+![alt text](internet-issues-solve-command.png)
 
 Then brought the connection back up to apply it:
+In another terminal:
+```bash
+sudo nmcli device connect eth0
 
+```
+
+![alt text](error-solve.png)
 ```bash
 sudo nmcli connection down "Wired connection 1"
 sudo nmcli connection up "Wired connection 1"
@@ -185,7 +190,7 @@ sudo nmcli connection up "Wired connection 1"
 
 > **Note:** Connection names (like `"Wired connection 1"`) can differ between systems — always check with `nmcli connection show` first before running this.
 
-![alt text](ifconfig.png)
+
 
 ---
 
